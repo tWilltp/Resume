@@ -36,6 +36,10 @@ function repoInformationHTML(repos) {
 }
 
 function fetchGithubInformation(event) {
+
+    $("#gh-user-data").html("");
+    $("#gh-repo-data").html("");
+
     var username = $("#gh-username").val();
     if (!username) {
         $("gh-user-data").html(`<h2>Please enter a GitHub username</h2>`);
@@ -63,6 +67,9 @@ function fetchGithubInformation(event) {
                 $("#gh-user-data").html(
                     `<h2>No info found for user ${username}</h2>`
                 );
+            } else if (errorResponse.status === 403) {
+                var restTime = new Data(errorResponse.getResponseHeader("X-rateLimit-rest")*1000);
+                $("#gh-user-data").html(`<h4>Too many requests, please wait until ${restTime.toLocalTimeString()}</h4>`)
             } else {
                 console.log(errorResponse);
                 $("#gh-user-data").html(
@@ -72,3 +79,5 @@ function fetchGithubInformation(event) {
         }
     );
 }
+
+$(document).ready(fetchGithubInformation);
